@@ -1,0 +1,10 @@
+{
+  "background_color": "gold",
+  "display": "standalone",
+  "lang": "en",
+  "name": "suncycle-app",
+  "short_name": "suncycle-app",
+  "start_url": "/?utm_source=web_app_manifest",
+  "theme_color": "gold",
+  "orientation": "portrait"
+}

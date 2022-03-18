@@ -4,9 +4,9 @@
     "slug": "suncycle-app",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/icon-512.png",
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./assets/icon-512.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -21,12 +21,14 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/icon-512.png",
         "backgroundColor": "#FFFFFF"
       }
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "icon": "./assets/icon-512.png",
+      "backgroundColor": "#ffff00",
+      "themeColor": "#ffff00"
     }
   }
 }
