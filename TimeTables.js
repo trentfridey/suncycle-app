@@ -1,6 +1,6 @@
 import { formatHours } from "./util"
 import { View, Text } from 'react-native';
-import { h2Style } from "./App";
+import { h2Style } from "./styles";
 
 
 export const TimeTables = ({
