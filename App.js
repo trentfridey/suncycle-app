@@ -37,10 +37,12 @@ class App extends React.Component {
     const defaultTimeRange = [Date.now()-window/2, Date.now()+3*window/2]
     const initialLocation = { lat: 35.835, lng: -78.783 }
     const series = this.generateSunSeries(initialLocation, defaultTimeRange)
+    const today = (new Date()).setHours(0,0,0,0)
     
     this.state = { 
       timeRange: defaultTimeRange,
       location: initialLocation,
+      selectedDate: new Date(today),
       series
     }
     this.getSolstice()
@@ -62,8 +64,14 @@ class App extends React.Component {
     this.getSolstice()
     this.getEquinox()
   }
-  handleNav () {
-    return true // TODO: update current date
+  handleNav (direction) {
+    this.setState(({selectedDate, ...state}) => {
+      const nextDate = new Date(selectedDate.getTime() + direction*days)
+      return {
+        ...state,
+        selectedDate: new Date(nextDate.setHours(0,0,0,0)),
+      }
+    })
   }
   formatRelativeTicks (d) {
     if(!d) return 'None'
@@ -101,9 +109,8 @@ class App extends React.Component {
     return equinoxes
   }
   render() {
-    const todaysDate = (new Date()).setHours(0,0,0,0)
     const { sunrise, sunset } = this.state.series.find(({date}) => {
-      return date.setHours(0,0,0,0) == todaysDate
+      return date.setHours(0,0,0,0) == this.state.selectedDate.getTime()
     })
     const midday = (sunset - sunrise)/2 + sunrise
     const now = new Date()
@@ -116,11 +123,11 @@ class App extends React.Component {
     
     return (
     <ScrollView style={{padding: '5%', backgroundColor: '#151d30', height: '100%' }}>
-      <Text style={{ fontSize: 32, textAlign: 'center'}}>🌞</Text>
+      <Text style={{ fontSize: 32, textAlign: 'center'}}>🌅</Text>
       <Text style={titleStyle}>Sunsettr</Text>
       <TimeTables {...{
         location: this.state.location,
-        hoverDate: new Date(),
+        hoverDate: this.state.selectedDate,
         riseLabel, 
         middayLabel, 
         setLabel, 
@@ -131,20 +138,20 @@ class App extends React.Component {
             <NavButton direction='previous' handleNav={this.handleNav}/>
             <TouchableOpacity 
               style={{...buttonStyle, textAlign: 'center', borderBottom: '5px solid grey'}} 
-              onPress={()=>this.setState({tracker: new Date()})}
+              onPress={()=>this.setState(({selectedDate, ...state}) => ({...state, selectedDate: new Date((new Date()).setHours(0,0,0,0))}))}
             >
               <Text style={buttonTextStyle}>Today</Text>
             </TouchableOpacity>
             <NavButton direction='next' handleNav={this.handleNav}/>
           </View>
       <View style={{width: '100%', border: '1px solid black', overflow: 'hidden'}}>
-        <VictoryChart style={{background: { fill: 'steelblue' }}}>           
+        <VictoryChart style={{background: { fill: '#101c24' }}}>           
           <VictoryLine
             style={{
               data: { stroke: "red", strokeWidth: 2 },
               labels: { angle: -90, fill: "red", fontSize: 20 }
             }}
-            x={() => todaysDate}
+            x={() => (new Date()).setHours(0,0,0,0)}
           />
           <VictoryAxis tickCount={24} dependentAxis domain={[0,24]} style={{ axis: { stroke: 'white'}, grid: { stroke: 'grey', strokeDasharray: 2 }, tickLabels: { fontSize: 8, stroke: 'none', fill: 'white'} }}/>
           <VictoryAxis tickCount={12} tickFormat={x => (new Date(x)).toLocaleString('default', { month: 'short'})} style={{axis: { stroke: 'white'}, grid: { stroke: 'grey', strokeDasharray: 4}, tickLabels: { fontSize: 8, stroke: 'none', fill: 'white'} }}/>

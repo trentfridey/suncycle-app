@@ -20,7 +20,7 @@ export const TimeTables = ({
     📅 Date: {hoverDate.getMonth() + 1}/{hoverDate.getDate()}/{hoverDate.getFullYear()}
     </Text>
     <Text style={{ ...h2Style }}>
-       🌅 Sunrise: {riseLabel}AM
+       🌞 Sunrise: {riseLabel}AM
     </Text>
     <Text style={{ ...h2Style }}>
       🌤 Midday: {middayLabel}
