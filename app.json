@@ -1,14 +1,14 @@
 {
   "expo": {
-    "name": "suncycle-app",
-    "slug": "suncycle-app",
+    "name": "sunsettr",
+    "slug": "sunsettr",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon-512.png",
     "splash": {
-      "image": "./assets/icon-512.png",
+      "image": "./assets/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#4682b4"
     },
     "updates": {
       "fallbackToCacheTimeout": 0
@@ -23,7 +23,8 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/icon-512.png",
         "backgroundColor": "#FFFFFF"
-      }
+      },
+      "package": "org.tfri.sunsettr"
     },
     "web": {
       "icon": "./assets/icon-512.png",
