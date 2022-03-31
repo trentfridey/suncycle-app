@@ -1,7 +1,7 @@
 import { StyleSheet, ScrollView, View, Text, Button, TouchableOpacity} from 'react-native';
 import React from "react";
 import * as Location from 'expo-location';
-import { days, fractionalHoursToHoursMinutes, calculateSunriseSunset } from './util'
+import { days, months, fractionalHoursToHoursMinutes, calculateSunriseSunset } from './util'
 import { TimeTables } from './TimeTables';
 import { VictoryChart, VictoryLine, VictoryAxis } from 'victory-native'
 import { buttonStyle, buttonTextStyle, titleStyle } from './styles'
@@ -151,12 +151,12 @@ class App extends React.Component {
               data: { stroke: "red", strokeWidth: 2 },
               labels: { angle: -90, fill: "red", fontSize: 20 }
             }}
-            x={() => (new Date()).setHours(0,0,0,0)}
+            x={() => this.state.selectedDate}
           />
-          <VictoryAxis tickCount={24} dependentAxis domain={[0,24]} style={{ axis: { stroke: 'white'}, grid: { stroke: 'grey', strokeDasharray: 2 }, tickLabels: { fontSize: 8, stroke: 'none', fill: 'white'} }}/>
-          <VictoryAxis tickCount={12} tickFormat={x => (new Date(x)).toLocaleString('default', { month: 'short'})} style={{axis: { stroke: 'white'}, grid: { stroke: 'grey', strokeDasharray: 4}, tickLabels: { fontSize: 8, stroke: 'none', fill: 'white'} }}/>
-          <VictoryLine style={{data: { strokeWidth: 1, stroke: 'blue' }}} data={this.state.series} x={'date'} y={'sunrise'}/>
-          <VictoryLine style={{data: { strokeWidth: 1, stroke: 'orange'}}} data={this.state.series} x={'date'} y={'sunset'}/>
+          <VictoryAxis invertAxis tickCount={24} dependentAxis domain={[24,0]} style={{ axis: { stroke: 'white'}, grid: { stroke: 'grey', strokeDasharray: 2 }, tickLabels: { fontSize: 8, stroke: 'none', fill: 'white'} }}/>
+          <VictoryAxis tickCount={12} tickFormat={x => months[(new Date(x)).getMonth()]} style={{axis: { stroke: 'white'}, grid: { stroke: 'grey', strokeDasharray: 4}, tickLabels: { fontSize: 8, stroke: 'none', fill: 'white'} }}/>
+          <VictoryLine style={{data: { strokeWidth: 1, stroke: 'orange' }}} data={this.state.series} x={'date'} y={'sunrise'}/>
+          <VictoryLine style={{data: { strokeWidth: 1, stroke: 'steelblue'}}} data={this.state.series} x={'date'} y={'sunset'}/>
         </VictoryChart>
         </View>
       </ScrollView>

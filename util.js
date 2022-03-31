@@ -5,6 +5,21 @@ export const minutes = 60*seconds
 export const hours = 60*minutes
 export const days = 24*hours
 
+export const months = [
+    'Jan',
+    'Feb',
+    'Mar',
+    'Apr',
+    'May',
+    'Jun',
+    'Jul',
+    'Aug',
+    'Sep',
+    'Oct',
+    'Nov',
+    'Dec'
+]
+
 export function formatHours (hours) {
     if(!hours) return '--'
     const roundedMinutes = Math.floor(hours*60)
