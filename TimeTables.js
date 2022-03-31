@@ -14,7 +14,7 @@ export const TimeTables = ({
     return (
     <View>
     <Text style={{ ...h2Style }}>
-    🌎 { `Lat: ${location.lat}, Lon: ${location.lng}` }
+    🌎 { `Lat: ${Number(location.lat).toFixed(2)}, Lon: ${Number(location.lng).toFixed(2)}` }
     </Text>
     <Text style={{ ...h2Style }}>
     📅 Date: {hoverDate.getMonth() + 1}/{hoverDate.getDate()}/{hoverDate.getFullYear()}
