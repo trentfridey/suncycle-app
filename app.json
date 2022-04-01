@@ -24,7 +24,8 @@
         "foregroundImage": "./assets/icon-512.png",
         "backgroundColor": "#FFFFFF"
       },
-      "package": "org.tfri.sunsettr"
+      "package": "org.tfri.sunsettr",
+      "permissions": ["ACCESS_COARSE_LOCATION"]
     },
     "web": {
       "icon": "./assets/icon-512.png",
