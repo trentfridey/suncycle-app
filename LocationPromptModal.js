@@ -1,11 +1,13 @@
 import React, { useState } from 'react'
-import { View, Modal, Text, StyleSheet, Pressable } from 'react-native';
+import { View, Modal, Text, StyleSheet, Pressable, Image } from 'react-native';
+const image = require('./assets/sun-earth.png')
 
 export const LocationPromptModal = ({visible, onConfirm, onCancel}) => {
     return <View>
         <Modal transparent style={{backgroundColor: 'rgba(0,0,0,0.1)'}} visible={visible}>
             <View style={styles.modalView}>
             <Text style={styles.h2}>Use your location</Text>
+            <Image source={image} />
             <Text style={styles.text}>
                 Sunsettr uses your device's location in order to compute the sunrise and sunset times at your location, even when the app is closed or not in use
             </Text>
@@ -21,7 +23,6 @@ export const LocationPromptModal = ({visible, onConfirm, onCancel}) => {
 const styles = StyleSheet.create({
     modalView: {
         marginBottom: 20,
-        height: '100vh',
         marginLeft: 5,
         marginRight: 5,
         backgroundColor: "black",
@@ -48,7 +49,7 @@ const styles = StyleSheet.create({
         fontSize: 12
     },
     button: {
-        flex: 'none',
+        flex: 0,
         borderRadius: 5,
         padding: 10,
         elevation: 2,
