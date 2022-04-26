@@ -1,32 +1,41 @@
-import { StyleSheet, ScrollView, View, Text, Button, TouchableOpacity} from 'react-native';
+import { ScrollView, View, Text, TouchableOpacity, TextStyle } from 'react-native';
 import React from "react";
 import * as Location from 'expo-location';
-import { days, months, fractionalHoursToHoursMinutes, calculateSunriseSunset } from './util'
+import { days, months, fractionalHoursToHoursMinutes, calculateSunriseSunset, Coords } from './util'
 import { TimeTables } from './TimeTables';
 import { LocationPromptModal } from './LocationPromptModal';
 import { VictoryChart, VictoryLine, VictoryAxis } from 'victory-native'
 import { buttonStyle, buttonTextStyle, titleStyle } from './styles'
 
-const NavButton = ({direction, handleNav}) => {  
-  const data = {
+const NavButton = ({direction, handleNav}: {direction: 'next' | 'previous', handleNav: (direction: number) => void}) => {  
+  const data: {text: string, shift: number, align: 'right' | 'left'} = {
     text: direction == 'next' ? 'Next >' : '< Previous',
     shift: direction == 'next' ? 1 : -1,
     align: direction == 'next' ? 'right' : 'left'
   }
+  const style: TextStyle = {textAlign: data.align, ...buttonTextStyle}
   return (
   <TouchableOpacity 
-    title={direction}
     onPress={()=>handleNav(data.shift)} 
     style={buttonStyle}>
-      <Text style={{textAlign: data.align, ...buttonTextStyle}}>
+      <Text style={style}>
         {data.text}
       </Text>
     </TouchableOpacity>
   )
 }
 
+interface Props {};
 
-class App extends React.Component {
+interface State {
+  timeRange: number[];
+  location: Coords;
+  selectedDate: Date;
+  series: Array<{date: Date, sunrise: number, sunset: number}>;
+  modalVisible: boolean;
+}
+
+class App extends React.Component<Props, State> {
   constructor (props){
     super(props);
     this.handleNav = this.handleNav.bind(this)
@@ -36,8 +45,8 @@ class App extends React.Component {
     this.onObtainLocation = this.onObtainLocation.bind(this)
     this.onCancelLocationPermission = this.onCancelLocationPermission.bind(this)
     const window = 240*days
-    const defaultTimeRange = [Date.now()-window/2, Date.now()+3*window/2]
-    const initialLocation = { lat: 35.835, lng: -78.783 }
+    const defaultTimeRange: number[] = [Date.now()-window/2, Date.now()+3*window/2]
+    const initialLocation: Coords = { latitude: 35.835, longitude: -78.783 }
     const series = this.generateSunSeries(initialLocation, defaultTimeRange)
     const today = (new Date()).setHours(0,0,0,0)
     
@@ -45,7 +54,8 @@ class App extends React.Component {
       timeRange: defaultTimeRange,
       location: initialLocation,
       selectedDate: new Date(today),
-      series
+      series,
+      modalVisible: false,
     }
     this.getSolstice()
     this.getEquinox()
@@ -70,16 +80,15 @@ class App extends React.Component {
     return await Location.getCurrentPositionAsync({})
   }
   onObtainLocation ({ coords }){
-    const location = { lat: coords.latitude, lng: coords.longitude}
-    const sunSeries = this.generateSunSeries(location, this.state.timeRange)
-    this.setState({ sunSeries, location })
+    const sunSeries = this.generateSunSeries(coords, this.state.timeRange)
+    this.setState({ series: sunSeries, location: coords })
     this.getSolstice()
     this.getEquinox()
   }
   onCancelLocationPermission () {
     this.setState((state) => ({...state, modalVisible: false}))
   }
-  handleNav (direction) {
+  handleNav (direction: number): void {
     this.setState(({selectedDate, ...state}) => {
       const nextDate = new Date(selectedDate.getTime() + direction*days)
       return {
@@ -88,33 +97,35 @@ class App extends React.Component {
       }
     })
   }
-  formatRelativeTicks (d) {
+  formatRelativeTicks (d: number): string {
     if(!d) return 'None'
     const delta = (d - Date.now())
     return `${Math.floor(delta/days)} d` 
   } 
-  generateSunSeries ({lat, lng}, timeRange) {
+  generateSunSeries (location, timeRange): Array<{ date, sunrise, sunset }> {
     const dateArray = []
     for(let currentDate = timeRange[0]; currentDate < timeRange[1]; currentDate += 1*days) {
       dateArray.push(new Date(currentDate))
     }
     return dateArray.map(date => {
-      const { sunrise, sunset } = calculateSunriseSunset({lat, lng}, date)
+      const { sunrise, sunset } = calculateSunriseSunset(location, date)
       return { date, sunrise, sunset }
     })
   }
-  getHoursOfDaylight () {
+  getHoursOfDaylight (): Array<{date: Date, hours: number}> {
     return this.state.series.map(({ date, sunrise, sunset }) => {
       return {date, hours: sunrise - sunset}
     })
   }
-  getSolstice() { 
+  getSolstice(): { summer: Date, winter: Date } { 
     const hoursArray = this.getHoursOfDaylight()
-    const {date: longestDay} = hoursArray.indexOf(Math.max(hoursArray))
-    const {date: shortestDay} = hoursArray.indexOf(Math.min(hoursArray))
+    const maxHours = Math.max(...hoursArray.map(h => h.hours))
+    const minHours = Math.min(...hoursArray.map(h => h.hours))
+    const { date: longestDay} = hoursArray.find(h => h.hours === maxHours)
+    const { date: shortestDay} = hoursArray.find(h => h.hours === minHours)
     return { summer: longestDay, winter: shortestDay }
   }
-  getEquinox () {
+  getEquinox (): Array<Date> {
     const hoursArray = this.getHoursOfDaylight()
     const eps = 0.005
     const equinoxes = []
@@ -157,15 +168,19 @@ class App extends React.Component {
           <View style={{display: 'flex', flexDirection: 'row', marginTop: 15 }}>
             <NavButton direction='previous' handleNav={this.handleNav}/>
             <TouchableOpacity 
-              style={{...buttonStyle, textAlign: 'center', borderBottom: '5px solid grey'}} 
+              style={{...buttonStyle, borderBottomColor: 'grey', borderBottomWidth: 5}} 
               onPress={()=>this.setState(({selectedDate, ...state}) => ({...state, selectedDate: new Date((new Date()).setHours(0,0,0,0))}))}
             >
-              <Text style={buttonTextStyle}>Today</Text>
+              <Text style={{textAlign: 'center', ...buttonTextStyle}}>Today</Text>
             </TouchableOpacity>
             <NavButton direction='next' handleNav={this.handleNav}/>
           </View>
-      <View style={{width: '100%', border: '1px solid black', overflow: 'hidden'}}>
-        <VictoryChart style={{background: { fill: '#101c24' }}}>           
+      <View style={{width: '100%', borderWidth: 1, borderColor: 'black', overflow: 'hidden'}}>
+        {/* 
+        @ts-ignore */}
+        <VictoryChart style={{background: { fill: '#101c24' }}}>
+        {/* 
+          @ts-ignore */}           
           <VictoryLine
             style={{
               data: { stroke: "red", strokeWidth: 2 },
@@ -173,9 +188,17 @@ class App extends React.Component {
             }}
             x={() => this.state.selectedDate}
           />
+        {/* 
+          @ts-ignore */}
           <VictoryAxis invertAxis tickCount={24} dependentAxis domain={[24,0]} style={{ axis: { stroke: 'white'}, grid: { stroke: 'grey', strokeDasharray: 2 }, tickLabels: { fontSize: 8, stroke: 'none', fill: 'white'} }}/>
+                  {/* 
+        @ts-ignore */}
           <VictoryAxis tickCount={12} tickFormat={x => months[(new Date(x)).getMonth()]} style={{axis: { stroke: 'white'}, grid: { stroke: 'grey', strokeDasharray: 4}, tickLabels: { fontSize: 8, stroke: 'none', fill: 'white'} }}/>
+                  {/* 
+        @ts-ignore */}
           <VictoryLine style={{data: { strokeWidth: 1, stroke: 'orange' }}} data={this.state.series} x={'date'} y={'sunrise'}/>
+                  {/* 
+        @ts-ignore */}
           <VictoryLine style={{data: { strokeWidth: 1, stroke: 'steelblue'}}} data={this.state.series} x={'date'} y={'sunset'}/>
         </VictoryChart>
         </View>

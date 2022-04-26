@@ -1,27 +1,25 @@
+import { ViewStyle, TextStyle } from 'react-native';
 
-export const buttonStyle = { 
-    fontWeight: 'bold', 
-    fontSize: 20,
+export const buttonStyle: ViewStyle = { 
+
     height: 60,
     flexGrow: 1,
     flexShrink: 0,
     flexBasis: 'auto', 
-    textAlign: 'left', 
-    cursor: 'pointer',
     borderBottomWidth: 2,
     borderBottomColor: 'steelblue',
     backgroundColor: '#101c24',
-    color: 'white'
   };
   
-export const buttonTextStyle = {
+export const buttonTextStyle: TextStyle = {
     color: 'white',
     padding: 15,
     fontFamily: 'monospace',
-    fontSize: 18
+    fontSize: 18,
+    textAlign: 'left', 
   }
   
-export const h2Style = { 
+export const h2Style: TextStyle = { 
     padding: 15,
     borderWidth: 1,
     backgroundColor: '#101c24',
@@ -34,7 +32,7 @@ export const h2Style = {
     fontFamily: 'monospace'
   }
 
-export const titleStyle = { 
+export const titleStyle: TextStyle = { 
     textAlign: 'center',
     padding: 15,
     color: 'white',

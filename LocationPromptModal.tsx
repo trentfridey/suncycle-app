@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { View, Modal, Text, StyleSheet, Pressable, Image } from 'react-native';
 const image = require('./assets/sun-earth.png')
 
@@ -8,12 +8,16 @@ export const LocationPromptModal = ({visible, onConfirm, onCancel}) => {
             <View style={styles.modalView}>
             <Text style={styles.h2}>Use your location</Text>
             <Image source={image} />
-            <Text style={styles.text}>
+            <Text style={styles.bodyText}>
                 Sunsettr uses your device's location in order to compute the sunrise and sunset times at your location, even when the app is closed or not in use
             </Text>
             <View style={styles.buttonContainer}>
-                <Pressable style={styles.button} onPress={onCancel}><Text style={styles.text}>No thanks</Text></Pressable>
-                <Pressable style={styles.button} onPress={onConfirm}><Text style={styles.text}>Turn on</Text></Pressable>
+                <Pressable style={styles.button} onPress={onCancel}> 
+                    <Text style={styles.text}>No thanks</Text>
+                </Pressable>
+                <Pressable style={styles.button} onPress={onConfirm}>
+                    <Text style={styles.text}>Turn on</Text>
+                </Pressable>
             </View>
             </View>
         </Modal>
@@ -44,17 +48,25 @@ const styles = StyleSheet.create({
         fontSize: 24,
         margin: 10
     },
+    bodyText: {
+        marginTop: 50,
+        color: 'white',
+        fontSize: 14,
+        textAlign: 'center'  
+    },
     text: {
         color: 'white',
-        fontSize: 12
+        fontSize: 14,
+        textAlign: 'center'
     },
     button: {
         flex: 0,
+        flexBasis: 100,
         borderRadius: 5,
         padding: 10,
         elevation: 2,
         backgroundColor: 'steelblue',
-        color: 'white'
+        color: 'white',
         },
     buttonContainer: {
         marginTop: 100,

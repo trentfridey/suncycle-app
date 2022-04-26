@@ -1,5 +1,10 @@
 import tz from 'timezone';
 
+export interface Coords {
+    latitude: number,
+    longitude: number
+}
+
 export const seconds = 1000
 export const minutes = 60*seconds
 export const hours = 60*minutes
@@ -20,22 +25,23 @@ export const months = [
     'Dec'
 ]
 
-export function formatHours (hours) {
+export function formatHours (hours: number): string {
     if(!hours) return '--'
     const roundedMinutes = Math.floor(hours*60)
     const wholeHours = (roundedMinutes - roundedMinutes % 60)/60
     return `${wholeHours}hrs ${Math.floor(hours *60) % 60}min`
 }
 
-export function fractionalHoursToHoursMinutes (hours) {
+export function fractionalHoursToHoursMinutes (hours: number): string {
     const totalMinutes = Math.floor(hours * 60)
     const minutes = totalMinutes % 60
     const wholeHours = (totalMinutes - minutes) / 60
     return `${wholeHours < 10 ? '0'+wholeHours : wholeHours}:${minutes < 10 ? '0'+minutes : minutes}`
 }
 
-export const calculateSunriseSunset = ({lat, lng}, date) => {
+export const calculateSunriseSunset = (location: Coords, date: Date): { sunrise: number, sunset: number } => {
     const { sin, cos, tan,  acos, PI } = Math
+    const { latitude, longitude } = location
     const degrees = PI / 180
     const radians = 180 / PI
     const dayOfYear = Number.parseInt(tz(date, "%j"))
@@ -59,12 +65,12 @@ export const calculateSunriseSunset = ({lat, lng}, date) => {
                       + 1.48e-3 * sin(3*fracYear)
     const hourAngle = acos(
       cos(90.833*degrees) 
-      / (cos(lat*degrees) * cos(declination)) 
-      - (tan(lat*degrees) * tan(declination))
+      / (cos(latitude*degrees) * cos(declination)) 
+      - (tan(latitude*degrees) * tan(declination))
     )
 
-    const sunrise = ((720 - 4 * (lng + hourAngle*radians) - equationOfTime) - timeOffset)/60
-    const sunset = ((720 - 4 * (lng - hourAngle*radians) - equationOfTime) - timeOffset)/60
+    const sunrise = ((720 - 4 * (longitude + hourAngle*radians) - equationOfTime) - timeOffset)/60
+    const sunset = ((720 - 4 * (longitude - hourAngle*radians) - equationOfTime) - timeOffset)/60
 
     return { sunrise, sunset }
 } 
